@@ -33,10 +33,20 @@ db.once('open', () => {    //.once 只會做一次. 因為連線只會連一次,
   console.log('mongoDB connected');
 })
 
+// 呼叫hbs
+const exphbs = require('express-handlebars')
+app.engine('hbs', exphbs.engine({ defaultLayout: 'main', extname: '.hbs'}))
+app.set('view engine', 'hbs')
 
+// 呼叫 Todo model 準備要來渲染
+const Todo = require('./models/todo')  //載入Todo model
 app.get('/', (req, res) => {
-  res.send('hello kitty')
+  Todo.find() // 取出Todo model裡面所有的資料
+    .lean()   // 把mongoose的model物件轉換為乾淨的JavsScript資料陣列
+    .then(todos => res.render('index', {todos}))  // 將取得的todos傳入 index渲染
+    .catch(error => console.error(error))  //  顯示錯誤
 })
+
 
 app.listen(port, () => {
   console.log(`app.js in running on http://localhost:${port}`);
