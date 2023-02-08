@@ -95,6 +95,14 @@ app.post('/todos/:id/edit', (req, res) => {
     .catch(error => console.error(error))
 })
 
+// 刪除
+app.post('/todos/:id/delete', (req, res) => {
+  const id = req.params.id
+  return Todo.findById(id)
+    .then(todo => todo.remove())
+    .then(() => res.redirect('/'))
+    .catch(err => console.error(err))
+})
 
 // 監聽
 app.listen(port, () => {
