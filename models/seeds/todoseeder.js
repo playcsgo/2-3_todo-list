@@ -18,7 +18,7 @@ db.once('open', () => {
   console.log('mongoDB connected');
   for (let i = 0; i < 10; i++) {
     Todo.create({
-        name: `name: name-${i}`
+        name: `name-${i}`
       })
   }
   console.log('done');

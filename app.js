@@ -47,7 +47,56 @@ app.get('/', (req, res) => {
     .catch(error => console.error(error))  //  顯示錯誤
 })
 
+// 新增一條todo
+app.get('/todos/new', (req, res) => {
+  return res.render('new') // 顯示views中的new.hbs
+})
+// CREATE
+const bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: true })) //裝了body-parser 才能讓<input>的值存入req.body裡面
 
+app.post('/todos', (req, res) => {
+  const name = req.body.name  // 因為INPUT的name="name" 所以輸入的值會在req.body.name裡面
+  return Todo.create({ name:name })  //  存入資料庫??
+    .then(() => res.redirect('/'))
+    .catch(error => console.error(error))
+})
+
+// 瀏覽todo item
+app.get('/todos/:id', (req, res) => {
+  const id = req.params.id
+  return Todo.findById(id)
+    .lean()
+    .then(todo => res.render('detail', { todo }))
+    .catch(error => console.error(error))
+})
+
+// 修改
+// 進到修改頁面
+app.get('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  return Todo.findById(id)
+    .lean()
+    .then(todo => res.render('edit', { todo }))
+    .catch(error => console.error(error))
+})
+
+// 修改後存入
+app.post('/todos/:id/edit', (req, res) => {
+  const id = req.params.id
+  const newTodo = req.body.name
+  return Todo.findById(id)
+    .then(todo => {
+      todo.name = newTodo
+      return todo.save()
+      //return Todo.create({ name:newTodo })
+    })
+    .then(() => res.redirect('/'))
+    .catch(error => console.error(error))
+})
+
+
+// 監聽
 app.listen(port, () => {
   console.log(`app.js in running on http://localhost:${port}`);
 })
